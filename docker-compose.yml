@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver-dev
+    ports:
+      - '1433:1433'
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: 'YourStrong!Passw0rd'
+    volumes:
+      - ./sql-data-analytics-project/datasets/DataWarehouseAnalytics.bak:/var/opt/mssql/backups/DataWarehouseAnalytics.bak:ro
+      - ./sql-data-warehouse-project/datasets:/var/opt/mssql/source_data:ro
+      - ./sql-ultimate-course/datasets/sql-server:/var/opt/mssql/sqlserver_backups:ro
+    healthcheck:
+      test: [ 'CMD-SHELL', '/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong!Passw0rd -Q "SELECT 1"' ]
+      interval: 10s
+      retries: 5
