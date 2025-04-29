@@ -57,9 +57,42 @@ SQL-Ultimate-Course-Zero-to-Hero
    - Server: `localhost` / SQL Login: `sa` / `YourStrong!Passw0rd`
 
 4. **Restore databases** (see `docker-compose.yml` volume mounts)  
-   - Use the VS Code SQL explorer → **New Query** → copy the `RESTORE DATABASE…` scripts above.  
+   - Use the VS Code SQL explorer → **New Query** → copy the `RESTORE DATABASE…` scripts below.
 
-5. **(Optional)** Create `app_user` login for day-to-day work (see above).
+   ```sql
+   -- Analytics project
+   RESTORE DATABASE DataWarehouseAnalytics
+   FROM DISK = '/var/opt/mssql/backups/DataWarehouseAnalytics.bak'
+   WITH MOVE 'DataWarehouseAnalytics' TO '/var/opt/mssql/data/DataWarehouseAnalytics.mdf',
+         MOVE 'DataWarehouseAnalytics_log' TO '/var/opt/mssql/data/DataWarehouseAnalytics_log.ldf';
+   GO
+
+   -- Ultimate course (SalesDB & MyDatabase)
+   RESTORE DATABASE SalesDB
+   FROM DISK = '/var/opt/mssql/sqlserver_backups/SalesDB.bak'
+   WITH MOVE 'SalesDB' TO '/var/opt/mssql/data/SalesDB.mdf',
+         MOVE 'SalesDB_log' TO '/var/opt/mssql/data/SalesDB_log.ldf';
+   GO
+
+   RESTORE DATABASE MyDatabase
+   FROM DISK = '/var/opt/mssql/sqlserver_backups/MyDatabase.bak'
+   WITH MOVE 'MyDatabase' TO '/var/opt/mssql/data/MyDatabase.mdf',
+         MOVE 'MyDatabase_log' TO '/var/opt/mssql/data/MyDatabase_log.ldf';
+   GO
+   ```
+
+5. **(Optional)** Create `app_user` login for day-to-day work (see below).
+
+   ```sql
+   CREATE LOGIN app_user WITH PASSWORD = 'An0ther$trongPwd!';
+   GO
+   USE master;
+   CREATE USER app_user FOR LOGIN app_user;
+   GO
+   ALTER SERVER ROLE db_datareader ADD MEMBER app_user;
+   ALTER SERVER ROLE db_datawriter ADD MEMBER app_user;
+   GO
+   ```
 
 ---
 
