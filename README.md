@@ -42,7 +42,7 @@ SQL-Ultimate-Course-Zero-to-Hero
 1. **Clone the repo**  
 
    ```bash
-   git clone https://github.com/your-org/SQL-Ultimate-Course-Zero-to-Hero.git
+   git clone https://github.com/Ez-C99/SQL-Ultimate-Course-Zero-to-Hero.git
    cd SQL-Ultimate-Course-Zero-to-Hero
    ```
 
