@@ -3,16 +3,35 @@ services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sqlserver-dev
-    ports:
-      - '1433:1433'
+    ports: ['1433:1433']
     environment:
       ACCEPT_EULA: 'Y'
       SA_PASSWORD: 'YourStrong!Passw0rd'
     volumes:
-      - ./sql-data-analytics-project/datasets/DataWarehouseAnalytics.bak:/var/opt/mssql/backups/DataWarehouseAnalytics.bak:ro
-      - ./sql-data-warehouse-project/datasets:/var/opt/mssql/source_data:ro
-      - ./sql-ultimate-course/datasets/sql-server:/var/opt/mssql/sqlserver_backups:ro
-    healthcheck:
-      test: [ 'CMD-SHELL', '/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong!Passw0rd -Q "SELECT 1"' ]
-      interval: 10s
-      retries: 5
+      # Ultimate SQL Course backups and init scripts
+      - ./1-sql-ultimate-course/datasets/sql-server:/var/opt/mssql/sqlserver_backups:ro
+      # Data Analytics project .bak file
+      - ./3-sql-data-analytics-project/datasets/DataWarehouseAnalytics.bak:/var/opt/mssql/backups/DataWarehouseAnalytics.bak:ro
+      # Data Warehouse project init script
+      - ./2-sql-data-warehouse-project/scripts/init_database.sql:/var/opt/mssql/init/init_datawarehouse.sql:ro
+  postgres:
+    image: postgres:15
+    container_name: postgres-dev
+    ports: ['5432:5432']
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: YourStrong!Passw0rd
+    volumes:
+      # Ultimate SQL Course init scripts
+      - ./1-sql-ultimate-course/datasets/postgres:/docker-entrypoint-initdb.d:ro
+      # Data Warehouse project does not auto-run on Postgres; see section below.
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-dev
+    ports: ['3306:3306']
+    environment:
+      MYSQL_ROOT_PASSWORD: YourStrong!Passw0rd
+    volumes:
+      # Ultimate SQL Course init scripts
+      - ./1-sql-ultimate-course/datasets/mysql:/docker-entrypoint-initdb.d:ro
+      # Data Warehouse project does not auto-run on MySQL; see section below.
